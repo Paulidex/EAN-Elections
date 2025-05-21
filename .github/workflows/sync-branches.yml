@@ -6,7 +6,7 @@ on:
       - main  # This workflow runs when a push is made to 'main'
 
 permissions:
-  contents: write  # Required to allow push operations with GITHUB_TOKEN or PAT
+  contents: write  # Needed for pushing changes
 
 jobs:
   sync-branches:
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Required for full rebase operations
+          fetch-depth: 0  # Required for full history (rebase and merge)
 
       - name: Set up Git
         run: |
@@ -36,13 +36,20 @@ jobs:
           branches=("develop" "feature/deployment-and-apk" "feature/device-sensors-and-location" "feature/firebase-authentication" "feature/local-database-sqlite" "feature/mvp-data-connection" "feature/mvp-ui-navigation" "feature/project-setup-and-structure" "feature/ui-animations-and-charts")
 
           for branch in "${branches[@]}"; do
-            echo "Rebasing $branch onto main..."
+            echo "Processing branch: $branch"
             git checkout $branch || git checkout -b $branch origin/$branch
-            git rebase origin/main || {
-              echo "Conflict detected in $branch, resolving in favor of main..."
+            git merge origin/main --no-edit || {
+              echo "Merge conflict detected in $branch, resolving in favor of main..."
               git checkout --theirs .
               git add .
-              git rebase --continue
+              git commit -m "Auto-merge main into $branch with conflict resolution in favor of main"
             }
-            git push origin $branch --force-with-lease
+
+            if [[ "$branch" == "develop" ]]; then
+              echo "Protected branch detected, using normal push..."
+              git push origin $branch
+            else
+              echo "Feature branch detected, pushing with force-with-lease..."
+              git push origin $branch --force-with-lease
+            fi
           done
