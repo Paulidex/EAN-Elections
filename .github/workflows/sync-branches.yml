@@ -1,4 +1,4 @@
-name: Sync branches with main
+name: Sync all branches with main
 
 on:
   push:
@@ -6,14 +6,14 @@ on:
       - main  # This workflow runs when a push is made to 'main'
 
 jobs:
-  rebase:
+  sync-branches:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Necesario para operaciones de rebase completas
+          fetch-depth: 0  # Required for full rebase operations
 
       - name: Set up Git
         run: |
@@ -24,23 +24,15 @@ jobs:
         run: |
           git fetch --all
 
-      - name: Rebase develop onto main with auto conflict resolution
+      - name: Sync branches with main
         run: |
-          git checkout develop
-          git rebase origin/main || {
-            echo "Conflicto detectado, resolviendo con contenido de main..."
-            git checkout --theirs .
-            git add .
-            git rebase --continue
-          }
-          git push origin develop --force-with-lease
+          branches=("develop" "feature/deployment-and-apk" "feature/device-sensors-and-location" "feature/firebase-authentication" "feature/local-database-sqlite" "feature/mvp-data-connection" "feature/mvp-ui-navigation" "feature/project-setup-and-structure" "feature/ui-animations-and-charts")
 
-      - name: Rebase feature branches onto main with auto conflict resolution
-        run: |
-          for branch in feature/deployment-and-apk feature/device-sensors-and-location feature/firebase-authentication feature/local-database-sqlite feature/mvp-data-connection feature/mvp-ui-navigation feature/project-setup-and-structure feature/ui-animations-and-charts; do
-            git checkout $branch
+          for branch in "${branches[@]}"; do
+            echo "Rebasing $branch onto main..."
+            git checkout $branch || git checkout -b $branch origin/$branch
             git rebase origin/main || {
-              echo "Conflicto en $branch, resolviendo con contenido de main..."
+              echo "Conflict detected in $branch, resolving in favor of main..."
               git checkout --theirs .
               git add .
               git rebase --continue
