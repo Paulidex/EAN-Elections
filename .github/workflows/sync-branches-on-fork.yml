@@ -1,4 +1,4 @@
-name: Sync all branches with main on fork
+name: Fork Changes - Sync all branches with main on fork
 
 on:
   push:
