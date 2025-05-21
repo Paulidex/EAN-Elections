@@ -3,11 +3,11 @@ name: Sync all branches with main on fork
 on:
   push:
     branches:
-      - main  # Trigger when main is updated
-  workflow_dispatch:  # Optional: allow manual execution
+      - main  # Trigger when main is updated (e.g., via "Fetch upstream")
+  workflow_dispatch:  # Allow manual execution from Actions tab
 
 permissions:
-  contents: write  # Needed to push to the repository
+  contents: write  # Needed to allow pushing from GitHub Actions
 
 jobs:
   sync-branches:
@@ -17,16 +17,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Full history required for merge/rebase
+          fetch-depth: 0  # Ensure full history for merge/rebase
 
       - name: Set up Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-
-      - name: Authenticate using PAT
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Paulidex/EAN-Elections.git
 
       - name: Fetch all branches
         run: |
