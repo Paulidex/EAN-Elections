@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main  # Trigger when main is updated
+  workflow_dispatch:  # Allow manual execution
 
 permissions:
-  contents: write  # Needed to push to the repository
+  contents: write
 
 jobs:
   sync-branches:
@@ -16,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Full history required for merge/rebase
+          fetch-depth: 0
 
       - name: Set up Git
         run: |
@@ -51,10 +52,11 @@ jobs:
               echo "Protected branch detected, pushing normally..."
               git push origin $branch
             else
-              echo "Feature branch detected, pushing with force-with-lease (with retries)..."
+              echo "Feature branch detected, fetching latest ref and pushing with force-with-lease (with retries)..."
               attempt=0
               max_attempts=3
-              until git push origin $branch --force-with-lease || [ $attempt -eq $max_attempts ]; do
+
+              until git fetch origin $branch && git push origin $branch --force-with-lease || [ $attempt -eq $max_attempts ]; do
                 echo "Push failed on $branch, retrying in 5 seconds..."
                 sleep 5
                 attempt=$((attempt+1))
