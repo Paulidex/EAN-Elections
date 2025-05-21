@@ -1,40 +1,65 @@
-name: Sync forked branches with main
+name: Sync all branches with main
 
 on:
   push:
     branches:
-      - main  # Triggers when they click "Fetch upstream" and update their main branch
+      - main  # Trigger when main is updated
 
-  workflow_dispatch:  # Optional: allows manual execution from GitHub Actions tab
+permissions:
+  contents: write  # Needed to push to the repository
 
 jobs:
-  sync:
+  sync-branches:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Full history required for merge/rebase
 
       - name: Set up Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      - name: Fetch and merge main into all branches
+      - name: Authenticate using PAT
         run: |
-          git fetch origin
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Paulidex/EAN-Elections.git
 
+      - name: Fetch all branches
+        run: |
+          git fetch --all
+
+      - name: Sync branches with main
+        run: |
           branches=("develop" "feature/deployment-and-apk" "feature/device-sensors-and-location" "feature/firebase-authentication" "feature/local-database-sqlite" "feature/mvp-data-connection" "feature/mvp-ui-navigation" "feature/project-setup-and-structure" "feature/ui-animations-and-charts")
 
           for branch in "${branches[@]}"; do
-            echo "Updating $branch with main..."
+            echo "Processing branch: $branch"
             git checkout $branch || git checkout -b $branch origin/$branch
+
+            echo "Merging main into $branch..."
             git merge origin/main --no-edit || {
-              echo "Conflict in $branch. Resolving in favor of main..."
+              echo "Merge conflict in $branch. Resolving in favor of main..."
               git checkout --theirs .
               git add .
-              git commit -m "Auto-merge main into $branch"
+              git commit -m "Auto-merge main into $branch with conflict resolution"
             }
-            git push origin $branch
+
+            if [[ "$branch" == "develop" ]]; then
+              echo "Protected branch detected, pushing normally..."
+              git push origin $branch
+            else
+              echo "Feature branch detected, pushing with force-with-lease (with retries)..."
+              attempt=0
+              max_attempts=3
+              until git push origin $branch --force-with-lease || [ $attempt -eq $max_attempts ]; do
+                echo "Push failed on $branch, retrying in 5 seconds..."
+                sleep 5
+                attempt=$((attempt+1))
+              done
+            fi
+
+            echo "Finished processing $branch"
           done
