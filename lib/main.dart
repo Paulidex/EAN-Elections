@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/views/profile.dart';
 import 'firebase_options.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Importa aquí tu pantalla de login
-// Asumo que defines LoginPage en login_page.dart o similar
-// import 'login_page.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,6 +67,15 @@ class HomePage extends StatelessWidget {
         title: const Text('Bienvenido'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
@@ -79,6 +89,7 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+
 
 // Aquí incluye la clase LoginPage que te pasé anteriormente o impórtala
 class LoginPage extends StatefulWidget {
@@ -112,7 +123,32 @@ class _LoginPageState extends State<LoginPage> {
       setState(() => _errorMessage = e.message ?? 'Error desconocido');
     }
   }
+    Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // El usuario canceló el inicio de sesión
+        return;
+      }
 
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = e.message ?? 'Error en autenticación con Google';
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error inesperado: $e';
+      });
+    }
+  }
   @override
   void dispose() {
     _emailController.dispose();
@@ -121,30 +157,89 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isLogin ? 'Login' : 'Registro')),
+      backgroundColor: Colors.black, // fondo negro
+      appBar: AppBar(
+        title: Text(_isLogin ? 'Login' : 'Registro'),
+        backgroundColor: Colors.grey[900], // barra oscura para que combine
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/images/popcorn.png',
+              width: 100, // tamaño deseado
+              height: 100,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Voting App',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white, 
+              ),
+            ),
+            const SizedBox(height: 40),
+
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Correo electrónico'),
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Correo electrónico',
+                labelStyle: const TextStyle(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white54),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Contraseña'),
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Contraseña',
+                labelStyle: const TextStyle(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white54),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
               obscureText: true,
             ),
             const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: _submit,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
               child: Text(_isLogin ? 'Ingresar' : 'Registrar'),
             ),
+
+            const SizedBox(height: 12),
+
+            ElevatedButton.icon(
+              icon: const Icon(Icons.login),
+              label: const Text('Ingresar con Google'),
+              onPressed: _signInWithGoogle,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+            ),
+
             TextButton(
               onPressed: () {
                 setState(() {
@@ -152,12 +247,21 @@ class _LoginPageState extends State<LoginPage> {
                   _errorMessage = '';
                 });
               },
-              child: Text(_isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'),
+              child: Text(
+                _isLogin
+                    ? '¿No tienes cuenta? Regístrate'
+                    : '¿Ya tienes cuenta? Inicia sesión',
+                style: const TextStyle(color: Colors.white70),
+              ),
             ),
+
             if (_errorMessage.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
-                child: Text(_errorMessage, style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
               ),
           ],
         ),
