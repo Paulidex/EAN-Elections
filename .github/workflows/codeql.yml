@@ -1,0 +1,61 @@
+name: "CodeQL Analysis"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    # Analiza pull requests contra main
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * *'  # Análisis diario a las 2am
+
+jobs:
+  analyze:
+    # Definimos matrix para que se ejecute por lenguaje
+    strategy:
+      matrix:
+        language: [java, cpp, swift]
+
+    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Configuración común de CodeQL
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      # Build manual para Java
+      - name: Build Java code
+        if: matrix.language == 'java'
+        run: ./gradlew build --no-daemon
+
+      # Build manual para C++
+      - name: Build C++ code
+        if: matrix.language == 'cpp'
+        run: |
+          cd linux
+          make
+          # si hay build en windows u otro lugar, agregalo aquí
+
+      # Setup Flutter para Swift/macOS
+      - name: Setup Flutter SDK
+        if: matrix.language == 'swift'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.7.0'  # Ajusta versión según la que uses
+
+      - name: Flutter pub get
+        if: matrix.language == 'swift'
+        run: flutter pub get
+
+      - name: Flutter build macos
+        if: matrix.language == 'swift'
+        run: flutter build macos --no-codesign
+
+      # Finalmente ejecutamos el análisis
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
