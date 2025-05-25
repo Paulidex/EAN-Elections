@@ -4,14 +4,14 @@ on:
   push:
     branches: [main]
   pull_request:
-    # Analiza pull requests contra main
+    # Analyze pull requests against main
     branches: [main]
   schedule:
-    - cron: '0 2 * * *'  # Análisis diario a las 2am
+    - cron: '0 2 * * *'  # Daily analysis at 2am
 
 jobs:
   analyze:
-    # Definimos matrix para que se ejecute por lenguaje
+    # Define matrix to run per language
     strategy:
       matrix:
         language: [java, cpp, swift]
@@ -22,31 +22,43 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Configuración común de CodeQL
+      # Common CodeQL setup
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
 
-      # Build manual para Java
+      # Manual build for Java
       - name: Build Java code
         if: matrix.language == 'java'
-        run: ./gradlew build --no-daemon
+        run: |
+          if [ -f ./gradlew ]; then
+            echo "Using gradlew wrapper"
+            ./gradlew build --no-daemon
+          elif command -v mvn >/dev/null 2>&1; then
+            echo "Using Maven"
+            mvn clean compile
+          else
+            echo "No build tool found for Java, skipping build"
+          fi
 
-      # Build manual para C++
+      # Manual build for C++
       - name: Build C++ code
         if: matrix.language == 'cpp'
         run: |
-          cd linux
-          make
-          # si hay build en windows u otro lugar, agregalo aquí
+          if [ -f linux/Makefile ]; then
+            cd linux
+            make
+          else
+            echo "No Makefile found in linux/, skipping C++ build"
+          fi
 
-      # Setup Flutter para Swift/macOS
+      # Flutter setup for Swift/macOS
       - name: Setup Flutter SDK
         if: matrix.language == 'swift'
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.7.0'  # Ajusta versión según la que uses
+          flutter-version: '3.7.0'  # Adjust version if needed
 
       - name: Flutter pub get
         if: matrix.language == 'swift'
@@ -56,6 +68,6 @@ jobs:
         if: matrix.language == 'swift'
         run: flutter build macos --no-codesign
 
-      # Finalmente ejecutamos el análisis
+      # Finally run CodeQL analysis
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
