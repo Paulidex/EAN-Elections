@@ -61,7 +61,7 @@ class ForgotPasswordScreen extends StatelessWidget {
 
                   const SizedBox(height: 25), // Spacer between fields
                   // Custom text field for new password input
-                  const CustomTextField(labelText: 'Password'),
+                  const CustomTextField(labelText: 'Confirm Email'),
 
                   const SizedBox(height: 10), // Small spacer
                 ],
