@@ -9,7 +9,7 @@ on:
     - cron: '0 2 * * *'  # Daily at 2am
 
 env:
-  ANDROID_SDK_ROOT: /usr/lib/android-sdk
+  ANDROID_SDK_ROOT: ${{ runner.os == 'Linux' && '/usr/local/lib/android/sdk' || '/usr/lib/android-sdk' }}
 
 jobs:
   analyze:
@@ -29,6 +29,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # Setup Android SDK
+      - name: Setup Android SDK
+        if: matrix.language == 'java'
+        uses: android-actions/setup-android@v3
 
       # Setup Java environment
       - name: Setup Java
@@ -77,13 +82,12 @@ jobs:
             echo "Android project detected"
             
             # Setup Android environment
-            FLUTTER_SDK_PATH=$(flutter sdk-path)
+            FLUTTER_ROOT=$(flutter --version --machine | grep -o '"flutterRoot":"[^"]*"' | cut -d'"' -f4)
+            if [ -z "$FLUTTER_ROOT" ]; then
+              FLUTTER_ROOT=$(dirname $(which flutter))/..
+            fi
             echo "sdk.dir=$ANDROID_SDK_ROOT" > android/local.properties
-            echo "flutter.sdk=$FLUTTER_SDK_PATH" >> android/local.properties
-            
-            # Install Android SDK components if needed
-            sudo apt-get update
-            sudo apt-get install -y android-sdk
+            echo "flutter.sdk=$FLUTTER_ROOT" >> android/local.properties
             
             cd android
             if [ -f ./gradlew ]; then
