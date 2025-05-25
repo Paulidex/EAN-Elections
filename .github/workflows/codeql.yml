@@ -4,14 +4,12 @@ on:
   push:
     branches: [main]
   pull_request:
-    # Analyze pull requests against main
     branches: [main]
   schedule:
-    - cron: '0 2 * * *'  # Daily analysis at 2am
+    - cron: '0 2 * * *'  # Daily at 2am
 
 jobs:
   analyze:
-    # Matrix strategy to run per language
     strategy:
       matrix:
         language: [java, cpp, swift]
@@ -19,30 +17,26 @@ jobs:
     runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # Common CodeQL setup
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
 
-      # Manual build for Java
       - name: Build Java code
         if: matrix.language == 'java'
         run: |
           if [ -f ./gradlew ]; then
             echo "Using gradlew wrapper"
             ./gradlew build --no-daemon
-          elif command -v mvn >/dev/null 2>&1; then
+          elif [ -f ./pom.xml ]; then
             echo "Using Maven"
             mvn clean compile
           else
-            echo "No build tool found for Java, skipping build"
+            echo "No gradlew or pom.xml found, skipping Java build"
           fi
 
-      # Manual build for C++
       - name: Build C++ code
         if: matrix.language == 'cpp'
         run: |
@@ -53,12 +47,11 @@ jobs:
             echo "No Makefile found in linux/, skipping C++ build"
           fi
 
-      # Flutter setup for Swift/macOS
       - name: Setup Flutter SDK
         if: matrix.language == 'swift'
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.7.0'  # Adjust to your Flutter version
+          flutter-version: '3.7.0'
 
       - name: Flutter pub get
         if: matrix.language == 'swift'
@@ -68,6 +61,5 @@ jobs:
         if: matrix.language == 'swift'
         run: flutter build macos --no-codesign
 
-      # Run CodeQL analysis
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
