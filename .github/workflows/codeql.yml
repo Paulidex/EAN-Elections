@@ -65,7 +65,9 @@ jobs:
 
           if [ -f android/build.gradle ] || [ -f android/build.gradle.kts ]; then
             echo "Android project detected"
+            FLUTTER_SDK_PATH=$(flutter sdk-path)
             echo "sdk.dir=$ANDROID_SDK_ROOT" > android/local.properties
+            echo "flutter.sdk=$FLUTTER_SDK_PATH" >> android/local.properties
             cd android
             if [ -f ./gradlew ]; then
               ./gradlew assembleDebug --no-daemon --stacktrace
