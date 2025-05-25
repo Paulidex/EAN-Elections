@@ -10,56 +10,177 @@ on:
 
 jobs:
   analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
+    timeout-minutes: 60
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
     strategy:
+      fail-fast: false
       matrix:
         language: [java, cpp, swift]
 
-    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup Java for Java/Kotlin analysis
+      - name: Setup Java
+        if: matrix.language == 'java'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Setup C++ dependencies
+      - name: Install C++ dependencies
+        if: matrix.language == 'cpp'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake
+
+      # Setup Flutter for Swift analysis
+      - name: Setup Flutter SDK
+        if: matrix.language == 'swift'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
+          # Optional: specify queries or config-file
+          # queries: security-extended,security-and-quality
 
+      # Build steps for each language
       - name: Build Java code
         if: matrix.language == 'java'
         run: |
+          echo "Building Java/Kotlin code..."
+          
+          # Check for Android project
+          if [ -f android/build.gradle ] || [ -f android/build.gradle.kts ]; then
+            echo "Found Android project"
+            cd android
+            if [ -f ./gradlew ]; then
+              ./gradlew assembleDebug --no-daemon --stacktrace
+            else
+              gradle assembleDebug --no-daemon --stacktrace
+            fi
+            cd ..
+          fi
+          
+          # Check for standalone Java project
           if [ -f ./gradlew ]; then
-            echo "Using gradlew wrapper"
-            ./gradlew build --no-daemon
+            echo "Found Gradle wrapper, building with gradlew"
+            ./gradlew build --no-daemon --stacktrace
+          elif [ -f ./build.gradle ] || [ -f ./build.gradle.kts ]; then
+            echo "Found Gradle build file, building with gradle"
+            gradle build --no-daemon --stacktrace
           elif [ -f ./pom.xml ]; then
-            echo "Using Maven"
-            mvn clean compile
+            echo "Found Maven project, building with mvn"
+            mvn clean compile -DskipTests
           else
-            echo "No gradlew or pom.xml found, skipping Java build"
+            echo "No Java build files found. Checking Flutter project..."
+            if [ -f pubspec.yaml ]; then
+              echo "Flutter project detected, Java analysis will cover Android part"
+              flutter pub get
+              if [ -f android/build.gradle ]; then
+                cd android
+                ./gradlew assembleDebug --no-daemon
+                cd ..
+              fi
+            else
+              echo "No Java/Kotlin source files to build"
+            fi
           fi
 
       - name: Build C++ code
         if: matrix.language == 'cpp'
         run: |
-          if [ -f linux/Makefile ]; then
+          echo "Building C++ code..."
+          
+          # Check for different C++ build systems
+          if [ -f CMakeLists.txt ]; then
+            echo "Found CMakeLists.txt, building with CMake"
+            mkdir -p build
+            cd build
+            cmake ..
+            make -j$(nproc)
+            cd ..
+          elif [ -f linux/Makefile ]; then
+            echo "Found Makefile in linux/, building there"
             cd linux
-            make
+            make -j$(nproc)
+            cd ..
+          elif [ -f Makefile ]; then
+            echo "Found Makefile in root, building there"
+            make -j$(nproc)
+          elif [ -d ios ] && [ -f ios/Runner.xcodeproj/project.pbxproj ]; then
+            echo "Found iOS project with potential C++ code"
+            # For Flutter projects with iOS native code
+            if [ -f pubspec.yaml ]; then
+              flutter pub get
+            fi
           else
-            echo "No Makefile found in linux/, skipping C++ build"
+            echo "No C++ build system found. Checking for source files..."
+            if find . -name "*.cpp" -o -name "*.cc" -o -name "*.cxx" -o -name "*.c" | head -1 | grep -q .; then
+              echo "Found C++ source files but no build system"
+              echo "Creating a simple compilation to help CodeQL analysis"
+              # Try to compile individual files to help CodeQL understand the code
+              find . -name "*.cpp" -o -name "*.cc" -o -name "*.cxx" | head -5 | while read file; do
+                echo "Attempting to compile $file"
+                g++ -c "$file" -o /tmp/$(basename "$file").o || true
+              done
+            else
+              echo "No C++ source files found"
+            fi
           fi
 
-      - name: Setup Flutter SDK
+      - name: Build Swift code
         if: matrix.language == 'swift'
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.7.0'
-
-      - name: Flutter pub get
-        if: matrix.language == 'swift'
-        run: flutter pub get
-
-      - name: Flutter build macos
-        if: matrix.language == 'swift'
-        run: flutter build macos --no-codesign
+        run: |
+          echo "Building Swift code..."
+          
+          if [ -f pubspec.yaml ]; then
+            echo "Flutter project detected"
+            flutter pub get
+            
+            # Build iOS version
+            if [ -d ios ]; then
+              echo "Building iOS app"
+              flutter build ios --no-codesign --simulator
+            fi
+            
+            # Build macOS version if supported
+            if [ -d macos ]; then
+              echo "Building macOS app"
+              flutter build macos --no-codesign
+            fi
+          elif [ -f Package.swift ]; then
+            echo "Swift Package Manager project detected"
+            swift build
+          elif [ -d *.xcodeproj ] || [ -d *.xcworkspace ]; then
+            echo "Xcode project detected"
+            # Find the project/workspace file
+            PROJ_FILE=$(find . -name "*.xcodeproj" -o -name "*.xcworkspace" | head -1)
+            if [[ $PROJ_FILE == *.xcworkspace ]]; then
+              xcodebuild -workspace "$PROJ_FILE" -scheme $(xcodebuild -workspace "$PROJ_FILE" -list | grep -A 1 "Schemes:" | tail -1 | xargs) -destination "platform=iOS Simulator,name=iPhone 14" build
+            else
+              xcodebuild -project "$PROJ_FILE" -scheme $(xcodebuild -project "$PROJ_FILE" -list | grep -A 1 "Schemes:" | tail -1 | xargs) -destination "platform=iOS Simulator,name=iPhone 14" build
+            fi
+          else
+            echo "No recognized Swift build system found"
+          fi
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+          # Upload results even if there are no findings
+          upload: true
