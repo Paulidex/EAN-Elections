@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show BuildContext, MaterialApp, StatelessWidget, Widget, runApp;
 import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/register_screen.dart';
@@ -8,6 +8,10 @@ import 'screens/forgot_password_screen.dart';
 import 'screens/forgot_password_advice_screen.dart';
 import 'screens/reset_password_screen.dart';
 import 'screens/confirm_vote_screen.dart';
+import 'services/navigation_service.dart';
+
+
+
 
 void main() {
   runApp(const MyApp());
@@ -18,17 +22,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      navigatorKey: NavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
-      //home: HomeScreen(),
-      //home: RegisterScreen(),
-      //home: RegisterConfirmationScreen(),
-      //home: LoginScreen(),
-      //home: ForgotPasswordScreen(),
-      //home: ForgotPasswordAdviceScreen(),
-      //home: ResetPasswordScreen(),
-      //home: ConfirmVoteScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/register_confirmation': (context) => const RegisterConfirmationScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/forgot_password': (context) => const ForgotPasswordScreen(),
+        '/forgot_password_advice': (context) => const ForgotPasswordAdviceScreen(),
+        '/reset_password': (context) => const ResetPasswordScreen(),
+        '/confirm_vote': (context) => const ConfirmVoteScreen(),
+      },
     );
   }
 }
+
