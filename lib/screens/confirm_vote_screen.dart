@@ -1,37 +1,41 @@
 import 'package:flutter/material.dart';
-import '../widgets/background.dart';
-import '../widgets/logo.dart';
+import 'package:ean_elections/widgets/second_background.dart';
+import '../widgets/ticket_and_button.dart';
+import '../widgets/back_button.dart';
 
-// Stateless widget representing the vote confirmation screen
 class ConfirmVoteScreen extends StatelessWidget {
   const ConfirmVoteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: Stack(
         children: [
-          const Background(), // Background with gradient and stripes
+          const SecondBackground(),
 
           SafeArea(
-            top: false, // Disable top safe area padding
+            top: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 35,
-              ), // Horizontal padding
+              padding: const EdgeInsets.symmetric(horizontal: 35),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.center, // Center content horizontally
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 230), // Spacer from top
+                  const SizedBox(height: 30),
 
-                  const Logo(), // Logo with glow effect
-                  // Space between logo and confirmation text
-                  const SizedBox(height: 100),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: BackButtonCustom(
+                      onPressed: () {
+                        //logic button
+                      },
+                    ),
+                  ),
 
-                  // Thank you message after voting
                   const Text(
-                    "Thank you for your Vote!",
+                    "Confirm your vote!",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -41,22 +45,34 @@ class ConfirmVoteScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
 
-                  const SizedBox(height: 8), // Small spacer
-                  // Clickable text showing the user's selected vote
-                  Align(
-                    child: GestureDetector(
-                      onTap: () {
-                        // Action to show the movie that the customer voted for
-                      },
-                      child: const Text(
-                        "Your vote was for XXX",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Roboto',
-                          color: Colors.white,
+                  const SizedBox(height: 8),
+
+                  const Text(
+                    'Please verify your selection before submission for preventing accidental choices and ensuring intentional voting',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        width: screenWidth * 0.8,
+                        height: screenHeight * 0.72,
+                        child: TicketAndButton(
+                          width: screenWidth * 0.8,
+                          height: screenHeight * 0.72,
+                          buttonText: 'Submit', // Texto personalizable
+                          onPressed: () {
+                            // Acción al presionar
+                          },
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
