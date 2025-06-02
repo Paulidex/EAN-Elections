@@ -1,36 +1,95 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ean_elections/screens/register_confirmation_screen.dart';
 import 'package:ean_elections/widgets/icon.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/second_background.dart';
 import '../widgets/text_field.dart';
 import '../widgets/red_button.dart';
+import '../asd/auth.dart'; // Google SignIn
+import '../asd/register.dart'; // Nueva lógica
 
-// Stateless widget representing the registration screen
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final AuthService _authService = AuthService();
+
+  final TextEditingController _nameCtrl = TextEditingController();
+  final TextEditingController _emailCtrl = TextEditingController();
+  final TextEditingController _passCtrl = TextEditingController();
+  final TextEditingController _confirmPassCtrl = TextEditingController();
+
+  String _errorMessage = '';
+
+  void _register() async {
+    final email = _emailCtrl.text.trim();
+    final pass = _passCtrl.text.trim();
+    final confirm = _confirmPassCtrl.text.trim();
+
+    if (pass != confirm) {
+      setState(() => _errorMessage = 'Las contraseñas no coinciden');
+      return;
+    }
+
+    final error = await _authService.registerUser(email, pass);
+    if (error != null) {
+      setState(() => _errorMessage = error);
+    } else {
+      setState(() => _errorMessage = '');
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final uid = user.uid;
+        final name = _nameCtrl.text.trim();
+
+        // Guardar en Firestore
+        final userDoc = FirebaseFirestore.instance.collection('users').doc(uid);
+        await userDoc.set({
+          'userId': uid,
+          'name': name,
+          'email': email,
+          'createdAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
+
+      // Mostrar el SnackBar de confirmación
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("¡Registro exitoso!"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Redirigir
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const RegisterConfirmationScreen()),
+        );
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          const SecondBackground(), // Background with glowing circles and gradient
-
+          const SecondBackground(),
           SafeArea(
-            top: false, // Disable top safe area padding
+            top: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 35,
-              ), // Horizontal padding
+              padding: const EdgeInsets.symmetric(horizontal: 35),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.center, // Center horizontally
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 60), // Spacer at top
-                  // Popcorn image widget
-                  Pet(),
-
-                  const SizedBox(height: 30), // Spacer below image
-                  // Welcome message title
+                  const SizedBox(height: 60),
+                  const Pet(),
+                  const SizedBox(height: 30),
                   const Text(
                     "Welcome!",
                     style: TextStyle(
@@ -41,9 +100,7 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
-                  const SizedBox(height: 8), // Small spacer
-                  // Instructional subtitle
+                  const SizedBox(height: 8),
                   const Text(
                     "Complete the information below and create your account.",
                     style: TextStyle(
@@ -54,37 +111,86 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
-                  const SizedBox(
-                    height: 40,
-                  ), // Fixed space between image and form (adjustable)
-                  // Form input fields
-                  const CustomTextField(labelText: 'Full Name'),
+                  const SizedBox(height: 40),
+                  CustomTextField(labelText: 'Full Name', controller: _nameCtrl),
                   const SizedBox(height: 25),
-                  const CustomTextField(labelText: 'Email Address'),
+                  CustomTextField(labelText: 'Email Address', controller: _emailCtrl),
                   const SizedBox(height: 25),
-                  const CustomTextField(labelText: 'Password'),
+                  CustomTextField(labelText: 'Password', controller: _passCtrl, obscureText: true),
                   const SizedBox(height: 25),
-                  const CustomTextField(labelText: 'Confirm Password'),
+                  CustomTextField(labelText: 'Confirm Password', controller: _confirmPassCtrl, obscureText: true),
+                  if (_errorMessage.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Text(
+                        _errorMessage,
+                        style: const TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
                 ],
               ),
             ),
           ),
-
-          // Fixed position register button 50 px from bottom with horizontal padding of 35
           Positioned(
             bottom: 50,
             left: 35,
             right: 35,
-            child: RedButton(
-              text: 'Register',
-              onPressed: () {
-                // Action triggered when the register button is pressed
-              },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                RedButton(
+                  text: 'Register',
+                  onPressed: _register,
+                ),
+                const SizedBox(height: 15),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.login),
+                  label: const Text('Ingresar con Google'),
+                  onPressed: () async {
+                    try {
+                      await signInWithGoogle(); 
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("¡Inicio de sesión con Google exitoso!"),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      // Redirigir después de 2 segundos
+                      Future.delayed(const Duration(seconds: 2), () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const RegisterConfirmationScreen()),
+                        );
+                      });
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Error al ingresar con Google: ${e.toString()}")),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
+    _passCtrl.dispose();
+    _confirmPassCtrl.dispose();
+    super.dispose();
   }
 }

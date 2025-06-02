@@ -1,63 +1,62 @@
 import 'package:flutter/material.dart';
 
-// Stateless widget that creates a customizable text input field with a label
+// Widget reutilizable para campos de texto estilizados
 class CustomTextField extends StatelessWidget {
-  // Label text displayed above or inside the text field
   final String labelText;
+  final TextEditingController? controller;
+  final bool obscureText;
 
-  // Constructor requiring the label text
-  const CustomTextField({super.key, required this.labelText});
+  const CustomTextField({
+    super.key,
+    required this.labelText,
+    this.controller,
+    this.obscureText = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      // Text style for the user input text
+      controller: controller,
+      obscureText: obscureText,
       style: const TextStyle(
-        color: Color(0xFFE05259), // Text color (reddish tone)
-        fontSize: 24, // Font size for input text
-        fontFamily: 'Roboto', // Font family
-        fontWeight: FontWeight.w500, // Medium font weight
+        color: Color(0xFFE05259),
+        fontSize: 24,
+        fontFamily: 'Roboto',
+        fontWeight: FontWeight.w500,
       ),
       decoration: InputDecoration(
-        isDense: true, // Reduces vertical padding for a more compact look
-        filled: true, // Enables background fill color
-        fillColor: Colors.white, // Background color of the text field
-        labelText: labelText, // Label shown inside or above the field
+        isDense: true,
+        filled: true,
+        fillColor: Colors.white,
+        labelText: labelText,
         labelStyle: const TextStyle(
-          color: Color(0xFFE05259), // Label color matching input text color
-          fontSize: 16, // Label font size
-          fontFamily: 'Roboto', // Label font family
-          fontWeight: FontWeight.w500, // Medium font weight for label
+          color: Color(0xFFE05259),
+          fontSize: 16,
+          fontFamily: 'Roboto',
+          fontWeight: FontWeight.w500,
         ),
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 3, // Minimal vertical padding for tight height
-          horizontal: 20, // Horizontal padding inside the field
+          vertical: 3,
+          horizontal: 20,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            15,
-          ), // Rounded corners with radius 15
-          borderSide: BorderSide.none, // No visible border by default
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            15,
-          ), // Rounded corners when enabled
-          borderSide: BorderSide.none, // No border line when enabled
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            15,
-          ), // Rounded corners when focused
+          borderRadius: BorderRadius.circular(15),
           borderSide: const BorderSide(
-            color: Color(0xFFE05259), // Border color on focus (reddish)
-            width: 2, // Border thickness when focused
+            color: Color(0xFFE05259),
+            width: 2,
           ),
         ),
       ),
-      maxLines: 1, // Restricts input to a single line
-      keyboardType:
-          TextInputType.text, // Keyboard type optimized for regular text input
+      maxLines: 1,
+      keyboardType: TextInputType.text,
     );
   }
 }
