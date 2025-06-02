@@ -3,8 +3,9 @@ import '../widgets/background.dart';
 import '../widgets/logo.dart';
 import '../widgets/white_button.dart';
 import '../widgets/red_button.dart';
+import 'login_screen.dart';
+import 'register_screen.dart';
 
-// Stateless widget representing the home screen of the app
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -13,45 +14,44 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const Background(), // Background widget with gradient and stripes
+          const Background(), // Fondo con gradiente y líneas
           Center(
             child: Column(
               children: [
                 Expanded(
                   child: Column(
                     children: [
-                      const SizedBox(height: 60), // Spacer from top
-
-                      const Logo(), // App logo with glow effect
-
-                      const SizedBox(height: 120), // Spacer below logo
-
+                      const SizedBox(height: 60),
+                      const Logo(),
+                      const SizedBox(height: 120),
                       const Text(
-                        "Voting App", // Main title text
+                        "Voting App",
                         style: TextStyle(
-                          fontSize: 50, // Large font size
-                          fontWeight: FontWeight.bold, // Bold font weight
-                          fontFamily: 'Roboto', // Font family
-                          color: Colors.white, // White color text
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Roboto',
+                          color: Colors.white,
                         ),
-                        textAlign: TextAlign.center, // Center aligned text
+                        textAlign: TextAlign.center,
                       ),
-
-                      const SizedBox(height: 130), // Spacer below title
-
+                      const SizedBox(height: 130),
                       RedButton(
-                        text: 'Login', // Red button labeled 'Login'
+                        text: 'Login',
                         onPressed: () {
-                          // Placeholder for login action
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          );
                         },
                       ),
-
-                      const SizedBox(height: 40), // Spacer between buttons
-
+                      const SizedBox(height: 40),
                       WhiteButton(
-                        text: 'Register', // White button labeled 'Register'
+                        text: 'Register',
                         onPressed: () {
-                          // Placeholder for register action
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                          );
                         },
                       ),
                     ],

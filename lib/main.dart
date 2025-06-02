@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart' show BuildContext, MaterialApp, StatelessWidget, Widget, runApp;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/register_screen.dart';
@@ -17,6 +19,15 @@ import 'services/navigation_service.dart';
 
 
 void main() {
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
+import 'screens/pelis_screen.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -54,6 +65,7 @@ class MyApp extends StatelessWidget {
         '/reset_password': (context) => const ResetPasswordScreen(),
         '/confirm_vote': (context) => const ConfirmVoteScreen(),
       },
+      home: PeliculasScreen()
     );
   }
 }

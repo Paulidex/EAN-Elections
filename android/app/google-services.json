@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "822682831718",
+    "project_id": "vota-ean",
+    "storage_bucket": "vota-ean.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822682831718:android:3832a40bc26d4a5cdd56a7",
+        "android_client_info": {
+          "package_name": "com.example.ean_elections"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiEgHKqntLKEt9g6uKcPjUoIJATGI2o3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
