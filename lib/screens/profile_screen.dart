@@ -28,7 +28,7 @@ class ProfileScreen extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: BackButtonCustom(
                       onPressed: () {
-                        //logic button
+                        Navigator.pushReplacementNamed(context, '/vote_status');
                       },
                     ),
                   ),
@@ -84,7 +84,7 @@ class ProfileScreen extends StatelessWidget {
                   WhiteButton(
                     text: 'Edit Profile',
                     onPressed: () {
-                      //logic button
+                      Navigator.pushReplacementNamed(context, '/edit_profile');//logic button
                     },
                   ),
 
@@ -93,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                   WhiteButton(
                     text: 'Back Home',
                     onPressed: () {
-                      //logic button
+                      Navigator.pushReplacementNamed(context, '/voting_page');//logic button
                     },
                   ),
 
@@ -102,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
                   RedButton(
                     text: 'Log out',
                     onPressed: () {
-                      //logic button
+                      Navigator.pushReplacementNamed(context, '/home');//logic button
                     },
                   ),
                 ],

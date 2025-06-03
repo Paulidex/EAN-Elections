@@ -77,7 +77,7 @@ class ResetPasswordScreen extends StatelessWidget {
             child: RedButton(
               text: 'Start Voting',
               onPressed: () {
-                // Action triggered when the red button is pressed
+                Navigator.pushNamed(context, '/voting_page');// Action triggered when the red button is pressed
               },
             ),
           ),

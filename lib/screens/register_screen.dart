@@ -79,7 +79,7 @@ class RegisterScreen extends StatelessWidget {
             child: RedButton(
               text: 'Register',
               onPressed: () {
-                // Action triggered when the register button is pressed
+                Navigator.pushNamed(context, '/register_confirmation'); // Action triggered when the register button is pressed
               },
             ),
           ),

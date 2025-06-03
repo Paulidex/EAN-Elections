@@ -42,7 +42,7 @@ class HomeScreen extends StatelessWidget {
                       RedButton(
                         text: 'Login', // Red button labeled 'Login'
                         onPressed: () {
-                          // Placeholder for login action
+                          Navigator.pushNamed(context, '/login');
                         },
                       ),
 
@@ -51,7 +51,7 @@ class HomeScreen extends StatelessWidget {
                       WhiteButton(
                         text: 'Register', // White button labeled 'Register'
                         onPressed: () {
-                          // Placeholder for register action
+                          Navigator.pushNamed(context, '/register');
                         },
                       ),
                     ],

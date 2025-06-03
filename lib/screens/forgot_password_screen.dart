@@ -77,7 +77,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             child: RedButton(
               text: 'Send Reset Password Link',
               onPressed: () {
-                // Action triggered when the red button is pressed
+                Navigator.pushNamed(context, '/forgot_password_advice');// Action triggered when the red button is pressed
               },
             ),
           ),

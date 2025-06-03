@@ -67,7 +67,7 @@ class RegisterConfirmationScreen extends StatelessWidget {
             child: RedButton(
               text: 'Start Voting',
               onPressed: () {
-                // Action when the button is pressed
+                Navigator.pushNamed(context, '/voting_page'); // Action when the button is pressed
               },
             ),
           ),

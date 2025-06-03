@@ -15,7 +15,6 @@ import 'screens/confirm_vote_screen.dart';
 import 'screens/vote_status_screen.dart';
 import 'services/navigation_service.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -28,21 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: NavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
-      //home: SplashScreen(),
-      //home: HomeScreen(),
-      //home: RegisterScreen(),
-      //home: RegisterConfirmationScreen(),
-      //home: LoginScreen(),
-      //home: ForgotPasswordScreen(),
-      //home: ForgotPasswordAdviceScreen(),
-      //home: ResetPasswordScreen(),
-      //home: ThankYouVoteScreen(),
-      //home: ProfileScreen(),
-      //home: EditProfileScreen(),
-      //home: VotingPage(),
-      //home: ConfirmVoteScreen(),
-      home: VoteStatusScreen(),
-      initialRoute: '/',
+      initialRoute: '/', // ← SplashScreen será la pantalla inicial
       routes: {
         '/': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
@@ -52,7 +37,12 @@ class MyApp extends StatelessWidget {
         '/forgot_password': (context) => const ForgotPasswordScreen(),
         '/forgot_password_advice': (context) => const ForgotPasswordAdviceScreen(),
         '/reset_password': (context) => const ResetPasswordScreen(),
+        '/thank_you_vote': (context) => const ThankYouVoteScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/edit_profile': (context) => const EditProfileScreen(),
+        '/voting_page': (context) => const VotingPage(),
         '/confirm_vote': (context) => const ConfirmVoteScreen(),
+        '/vote_status': (context) => const VoteStatusScreen(),
       },
     );
   }

@@ -68,7 +68,7 @@ class LoginScreen extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
-                        // Action triggered when "Forget password?" is tapped
+                        Navigator.pushNamed(context, '/forgot_password');// Action triggered when "Forget password?" is tapped
                       },
                       child: const Text(
                         "Forget password?",
@@ -94,7 +94,7 @@ class LoginScreen extends StatelessWidget {
             child: RedButton(
               text: 'Log in',
               onPressed: () {
-                // Action triggered when login button is pressed
+                Navigator.pushNamed(context, '/voting_page');// Action triggered when login button is pressed
               },
             ),
           ),
