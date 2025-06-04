@@ -32,7 +32,7 @@ class VotingPage extends StatelessWidget {
                         child: RedButton(
                           text: 'Voting Status',
                           onPressed: () {
-                            // Action button red
+                            Navigator.pushNamed(context, '/vote_status');// Action button red
                           },
                         ),
                       ),
@@ -42,7 +42,7 @@ class VotingPage extends StatelessWidget {
                         child: WhiteButton(
                           text: 'Account',
                           onPressed: () {
-                            // Action button white
+                            Navigator.pushNamed(context, '/profile');// Action button white
                           },
                         ),
                       ),
@@ -65,7 +65,7 @@ class VotingPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return TicketAndButton(
                           onPressed: () {
-                            print('Vote pressed in ticket $index');
+                            Navigator.pushNamed(context, '/confirm_vote');
                           },
                           buttonText: 'Vote', //added to avoid error
                         );

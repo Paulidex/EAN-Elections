@@ -29,7 +29,7 @@ class ConfirmVoteScreen extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: BackButtonCustom(
                       onPressed: () {
-                        //logic button
+                        Navigator.pushNamed(context, '/voting_page');//logic button
                       },
                     ),
                   ),
@@ -70,7 +70,7 @@ class ConfirmVoteScreen extends StatelessWidget {
                           height: screenHeight * 0.72,
                           buttonText: 'Submit', // Texto personalizable
                           onPressed: () {
-                            // Acción al presionar
+                            Navigator.pushNamed(context, '/thank_you_vote');
                           },
                         ),
                       ),

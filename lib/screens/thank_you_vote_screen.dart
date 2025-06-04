@@ -1,35 +1,44 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../widgets/background.dart';
 import '../widgets/logo.dart';
 
-// Stateless widget representing the vote confirmation screen
-class ThankYouVoteScreen extends StatelessWidget {
+class ThankYouVoteScreen extends StatefulWidget {
   const ThankYouVoteScreen({super.key});
+
+  @override
+  State<ThankYouVoteScreen> createState() => _ThankYouVoteScreenState();
+}
+
+class _ThankYouVoteScreenState extends State<ThankYouVoteScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, '/vote_status');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          const Background(), // Background with gradient and stripes
+          const Background(),
 
           SafeArea(
-            top: false, // Disable top safe area padding
+            top: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 35,
-              ), // Horizontal padding
+              padding: const EdgeInsets.symmetric(horizontal: 35),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.center, // Center content horizontally
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 230), // Spacer from top
+                  const SizedBox(height: 230),
 
-                  const Logo(), // Logo with glow effect
-                  // Space between logo and confirmation text
+                  const Logo(),
+
                   const SizedBox(height: 100),
 
-                  // Thank you message after voting
                   const Text(
                     "Thank you for your Vote!",
                     style: TextStyle(
@@ -41,12 +50,12 @@ class ThankYouVoteScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
 
-                  const SizedBox(height: 8), // Small spacer
-                  // Clickable text showing the user's selected vote
+                  const SizedBox(height: 8),
+
                   Align(
                     child: GestureDetector(
                       onTap: () {
-                        // Action to show the movie that the customer voted for
+                        // Acción si quieres que pase algo cuando el usuario toque el texto
                       },
                       child: const Text(
                         "Your vote was for XXX",

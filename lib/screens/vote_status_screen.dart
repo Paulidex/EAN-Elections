@@ -32,7 +32,7 @@ class VoteStatusScreen extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: BackButtonCustom(
                       onPressed: () {
-                        // logic button
+                        Navigator.pushNamed(context, '/voting_page');// logic button
                       },
                     ),
                   ),
@@ -219,7 +219,7 @@ class VoteStatusScreen extends StatelessWidget {
                     angle: 4.7124,
                     child: BackButtonCustom(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.pushReplacementNamed(context, '/voting_page');
                       },
                     ),
                   ),

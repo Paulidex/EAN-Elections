@@ -1,36 +1,46 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../widgets/background.dart';
 import '../widgets/logo.dart';
 
-// Stateless widget representing the screen that advises the user to check their email after requesting a password reset
-class ForgotPasswordAdviceScreen extends StatelessWidget {
+class ForgotPasswordAdviceScreen extends StatefulWidget {
   const ForgotPasswordAdviceScreen({super.key});
+
+  @override
+  State<ForgotPasswordAdviceScreen> createState() => _ForgotPasswordAdviceScreenState();
+}
+
+class _ForgotPasswordAdviceScreenState extends State<ForgotPasswordAdviceScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    //reset_password
+    Timer(const Duration(seconds: 2), () {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/reset_password');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          const Background(), // Background with gradient and stripes
+          const Background(),
 
           SafeArea(
-            top: false, // Disable top safe area padding
+            top: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 35,
-              ), // Horizontal padding
+              padding: const EdgeInsets.symmetric(horizontal: 35),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.center, // Center content horizontally
-                children: [
-                  const SizedBox(height: 230), // Spacer from top
-
-                  const Logo(), // Logo with glow effect
-                  // Space between logo and text
-                  const SizedBox(height: 100),
-
-                  // Title text advising user to check their inbox
-                  const Text(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  SizedBox(height: 230),
+                  Logo(),
+                  SizedBox(height: 100),
+                  Text(
                     "Check your box!",
                     style: TextStyle(
                       fontSize: 24,
@@ -40,10 +50,8 @@ class ForgotPasswordAdviceScreen extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
-                  const SizedBox(height: 8), // Small spacer
-                  // Instructional text explaining that the password reset link was sent
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     "We have sent you a password reset link to your email. Click on it and follow the instructions to update your password.",
                     style: TextStyle(
                       fontSize: 17,

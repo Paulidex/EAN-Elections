@@ -62,7 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     alignment: Alignment.centerLeft,
                     child: BackButtonCustom(
                       onPressed: () {
-                        //logic button
+                        Navigator.pushReplacementNamed(context, '/profile');//logic button
                       },
                     ),
                   ),
