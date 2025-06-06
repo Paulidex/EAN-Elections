@@ -1,32 +1,40 @@
-# EAN-Elections
 
-EAN-Elections is a cross-platform mobile application developed with Flutter that implements a secure, efficient, and user-friendly electronic voting system. It is designed to provide a smooth experience for voters and administrators, including features such as registration, authentication, voting, password recovery, and results visualization.
+# 📱 EAN-Elections
 
-## Table of Contents
+EAN-Elections es una aplicación móvil multiplataforma desarrollada con Flutter que implementa un sistema de votación electrónica seguro, eficiente y fácil de usar. Está diseñada para ofrecer una experiencia fluida tanto para votantes como para administradores, incluyendo funcionalidades como registro, autenticación, votación, recuperación de contraseña y visualización de resultados.
 
-- [Project Description](#project-description)
-- [Project Structure](#project-structure)
-- [Files and Folders Description](#files-and-folders-description)
-- [Main Screens](#main-screens)
-- [Reusable Widgets](#reusable-widgets)
-- [Prototype](#prototype)
-- [Requirements](#requirements)
-- [Installation and Setup](#installation-and-setup)
-- [Running and Development](#running-and-development)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [CI/CD and Automation](#cicd-and-automation)
-- [License](#license)
+---
 
-## Project Description
+## 📑 Tabla de Contenidos
 
-EAN-Elections provides an electronic voting system for communities, organizations, and small to medium-sized electoral events. Users can register, log in, securely cast their votes, and view results. Administrators can manage elections, validate votes, and monitor election progress.
+- [Descripción del Proyecto](#descripción-del-proyecto)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Descripción de Carpetas y Archivos](#descripción-de-carpetas-y-archivos)
+- [Pantallas Principales](#pantallas-principales)
+- [Widgets Reutilizables](#widgets-reutilizables)
+- [Prototipo](#prototipo)
+- [Requisitos](#requisitos)
+- [Instalación y Configuración](#instalación-y-configuración)
+- [Ejecución y Desarrollo](#ejecución-y-desarrollo)
+- [Pruebas](#pruebas)
+- [Despliegue](#despliegue)
+- [CI/CD y Automatización](#cicd-y-automatización)
+- [Descripción de Ramas de Desarrollo](#descripción-de-ramas-de-desarrollo)
+- [Licencia](#licencia)
 
-The project is developed using Flutter, allowing multi-platform support on Android, iOS, Web, Windows, macOS, and Linux.
+---
 
-## Project Structure
+## 📘 Descripción del Proyecto
 
-```
+EAN-Elections proporciona un sistema de votación electrónica para comunidades, organizaciones y eventos electorales de pequeña y mediana escala. Los usuarios pueden registrarse, iniciar sesión, emitir su voto de forma segura y consultar los resultados. Los administradores pueden gestionar elecciones, validar votos y monitorear el progreso del evento electoral.
+
+Está desarrollado con **Flutter**, lo que permite compatibilidad multiplataforma: Android, iOS, Web, Windows, macOS y Linux.
+
+---
+
+## 🧱 Estructura del Proyecto
+
+```bash
 / (root)
 │   .gitignore
 │   .metadata
@@ -136,96 +144,136 @@ The project is developed using Flutter, allowing multi-platform support on Andro
 └── runner/
 └── resources/
 └── app\_icon.ico
-````
+```
 
-## Files and Folders Description
+## 🗂️ Descripción de Carpetas y Archivos
 
-| Folder / File               | Description                                                           |
-|----------------------------|-----------------------------------------------------------------------|
-| `lib/`                     | Main Flutter source code                                              |
-| `lib/main.dart`            | App entry point; sets up MaterialApp and routes                      |
-| `lib/screens/`             | Application screens (login, register, voting, profile, etc.)         |
-| `lib/widgets/`             | Reusable UI components (buttons, backgrounds, text fields, etc.)     |
-| `assets/`                  | Static assets like images and fonts                                  |
-| `prototype/`               | UI mockups and design prototypes                                     |
-| `test/`                    | Unit and widget tests                                                |
-| `android/`, `ios/`, `web/`, `windows/`, `linux/`, `macos/` | Platform-specific native code and configuration      |
-| `.github/workflows/`       | CI/CD and security scan automation scripts                          |
-| `pubspec.yaml`             | Flutter project config and dependencies                              |
-| `README.md`                | Project documentation                                               |
-| `LICENSE`                  | License file                                                       |
+| Carpeta / Archivo             | Descripción                                                                 |
+|------------------------------|-----------------------------------------------------------------------------|
+| `lib/`                       | Código fuente principal en Flutter                                          |
+| `lib/main.dart`              | Punto de entrada de la app y definición de rutas                           |
+| `lib/screens/`               | Pantallas principales (login, registro, votación, etc.)                    |
+| `lib/widgets/`               | Componentes UI reutilizables (botones, fondos, inputs)                     |
+| `assets/`                    | Recursos estáticos como imágenes                                           |
+| `prototype/`                 | Mockups de diseño                                                          |
+| `test/`                      | Pruebas unitarias y de widgets                                             |
+| `android/`, `ios/`, etc.     | Código nativo específico por plataforma                                    |
+| `.github/workflows/`         | Automatizaciones de GitHub Actions para CI/CD                              |
+| `pubspec.yaml`               | Configuración del proyecto y dependencias                                 |
+| `README.md`                  | Documentación del proyecto                                                 |
 
-## Main Screens (`lib/screens/`)
+## 🖥️ Pantallas Principales (`lib/screens/`)
 
-| File                           | Description                                                  |
-|-------------------------------|--------------------------------------------------------------|
-| `login_screen.dart`            | User login screen                                            |
-| `register_screen.dart`         | New user registration                                        |
-| `home_screen.dart`             | Main dashboard screen                                        |
-| `confirm_vote_screen.dart`     | Vote confirmation screen                                    |
-| `forgot_password_screen.dart`  | Password recovery request screen                             |
-| `forgot_password_advice_screen.dart` | Instructions for password recovery                     |
-| `register_confirmation_screen.dart` | Confirmation screen after registration                   |
-| `reset_password_screen.dart`   | Password reset screen                                        |
-| `splash_screen.dart`           | Initial splash/loading screen                               |
+| Archivo                               | Función                                                                 |
+|--------------------------------------|------------------------------------------------------------------------|
+| `login_screen.dart`                  | Pantalla de inicio de sesión                                           |
+| `register_screen.dart`               | Registro de nuevos usuarios                                           |
+| `home_screen.dart`                   | Pantalla principal del usuario                                        |
+| `confirm_vote_screen.dart`           | Confirmación de voto                                                  |
+| `forgot_password_screen.dart`        | Solicitud de recuperación de contraseña                               |
+| `forgot_password_advice_screen.dart` | Instrucciones para recuperación de contraseña                         |
+| `register_confirmation_screen.dart`  | Confirmación después del registro                                     |
+| `reset_password_screen.dart`         | Cambio de contraseña                                                  |
+| `splash_screen.dart`                 | Pantalla de carga inicial                                             |
 
-## Reusable Widgets (`lib/widgets/`)
+## 🧩 Widgets Reutilizables (`lib/widgets/`)
 
-This folder contains modular UI components to keep a consistent design throughout the app:
+Componentes modulares de UI que aseguran un diseño coherente:
 
-- **Buttons:** `red_button.dart`, `white_button.dart` – Custom styled buttons.
-- **Backgrounds:** `background.dart`, `second_background.dart` – Background graphics for screens.
-- **Inputs:** `text_field.dart` – Custom text input fields with validation.
-- **Decorative:** `circle.dart`, `icon.dart`, `logo.dart` – Icons, logos, and decorative shapes.
+- `red_button.dart`, `white_button.dart`: Botones personalizados.
+- `background.dart`, `second_background.dart`: Fondos decorativos.
+- `text_field.dart`: Campos de entrada con validación.
+- `circle.dart`, `icon.dart`, `logo.dart`: Elementos decorativos.
 
-These components improve maintainability and UI consistency by enabling reuse.
+## 🧪 Prototipo (`prototype/`)
 
-## Prototype (`prototype/`)
+Contiene mockups de interfaz (`mockup.png`) utilizados para guiar el diseño y mantener coherencia visual con la propuesta original.
 
-Contains UI mockups and design references such as `mockup.png`. These assets are used to guide development and ensure the app's UI matches the design vision.
+## ⚙️ Requisitos
 
-## Requirements
+- Flutter SDK
+- Android Studio / Xcode
+- Firebase configurado (para autenticación)
+- Git
+- Herramientas de línea de comandos (Gradle, CMake, etc.)
 
-- Flutter SDK (stable version)
-- Android Studio and/or Xcode for native builds
-- Internet connection for services like Firebase Authentication
-- Git for version control
-- Command-line build tools (Gradle, CMake, etc.)
+## 🛠️ Instalación y Configuración
 
-## Installation and Setup
-
-1. Clone the repository:
+1. Clona el repositorio:
 
 ```bash
-git clone <repository-url>
-  cd ean-elections
-````
+git clone https://github.com/Paulidex/EAN-Elections.git
+cd EAN-Elections
+```
 
-2. Install dependencies:
+2. Instala las dependencias:
 
 ```bash
 flutter pub get
 ```
 
-3. Configure Firebase (optional for authentication):
+3. Configura Firebase:
 
-   * Place `google-services.json` in `android/app/`.
-   * Place `GoogleService-Info.plist` in `ios/Runner/`.
-   * Set up Firebase project and enable required services.
+- `google-services.json` en `android/app/`
+- `GoogleService-Info.plist` en `ios/Runner/`
 
-4. Run the app on an emulator or device:
+4. Ejecuta la app:
 
 ```bash
 flutter run
 ```
 
-## Running and Development
+## ▶️ Ejecución y Desarrollo
 
-* The entry point is `lib/main.dart`, which sets routes and theme.
-* Add new screens in `lib/screens/` and register routes in `main.dart`.
-* Use reusable UI components from `lib/widgets/`.
+- El archivo `main.dart` define las rutas y temas globales.
+- Las nuevas pantallas deben agregarse en `lib/screens/` y registrarse en `main.dart`.
+- Usa los widgets en `lib/widgets/` para mantener coherencia visual.
 
-## CI/CD and Automation
+## 🚀 Despliegue
 
-* Automated workflows in `.github/workflows/` handle security scans and branch synchronization.
-* Integrated with GitHub Actions to ensure code quality and facilitate deployments.
+Preparado para múltiples plataformas Flutter. Asegúrate de compilar nativamente según el sistema:
+
+```bash
+flutter build apk       # Android
+flutter build ios       # iOS
+flutter build web       # Web
+```
+
+## 🔁 CI/CD y Automatización
+
+- GitHub Actions en `.github/workflows/`:
+  - `codeql.yml`: Análisis de seguridad automatizado.
+  - `sync-branches.yml`: Sincronización entre ramas principales.
+
+## 🌱 Descripción de Ramas de Desarrollo
+
+### 🔹 `feature/mvp-ui-navigation`
+
+- Estructura de navegación del MVP implementada.
+- Configuración inicial de rutas en `main.dart`.
+- Todas las pantallas básicas conectadas: login, registro, home, confirmación, splash, etc.
+- Interacción fluida sin lógica de negocio aún.
+- Reutilización de widgets personalizados para botones, inputs y fondos.
+
+### 🔹 `feature/firebase-authentication`
+
+- Integración completa de Firebase Authentication.
+- Funcionalidad de login, registro, y recuperación de contraseña.
+- Manejo de errores de autenticación.
+- Pantallas conectadas a Firebase:
+  - `login_screen`
+  - `register_screen`
+  - `forgot_password_screen`
+  - `reset_password_screen`
+
+### 🔹 `feature/mvp-data-connection`
+
+- Conexión con Firestore u otra base de datos remota.
+- Guardado de votos reales.
+- Validación de usuarios (si ya votaron o no).
+- Visualización de resultados desde la base de datos.
+- Sincronización de datos entre frontend y backend para el MVP.
+
+## 📄 Licencia
+
+Este proyecto está bajo la licencia MIT. Ver el archivo `LICENSE` para más detalles.
